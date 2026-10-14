@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cantina Doulos - Venda de Pastel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#16a34a;--green-dark:#15803d;--yellow:#facc15;--bg:#fffef7;--card:#fff;--text:#1f2937;--muted:#6b7280}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;display:flex;justify-content:center;padding:20px;background-image:radial-gradient(#e5e7eb 1px,transparent 1px);background-size:24px 24px}
+.container{width:100%;max-width:420px}
+.header{background:linear-gradient(135deg,var(--green) 0%,#22c55e 100%);color:#fff;border-radius:24px 24px 0 0;padding:28px 24px 20px;text-align:center;position:relative;overflow:hidden}
+.header::after{content:"🥟";position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.15;transform:rotate(15deg)}
+.header h1{font-family:'Outfit',sans-serif;font-size:22px;font-weight:700}
+.header h2{font-size:14px;background:rgba(0,0,0,.15);display:inline-block;padding:4px 12px;border-radius:20px;margin-top:4px}
+.card{background:#fff;border-radius:0 0 24px 24px;padding:24px;box-shadow:0 10px 40px rgba(0,0,0,.08);border:1px solid #f3f4f6;border-top:none}
+.field{margin-bottom:18px}.label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;gap:6px}
+.input{width:100%;padding:14px 16px;border:2px solid #f3f4f6;border-radius:14px;font-size:15px;font-family:'Poppins';outline:none;background:#fafafa;transition:.2s}
+.input:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 4px rgba(22,163,74,.1)}
+.row{display:flex;gap:12px}.row .field{flex:1}
+.toggle-group{display:flex;background:#f3f4f6;border-radius:14px;padding:4px;gap:4px}
+.toggle-btn{flex:1;padding:12px;border:none;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;background:transparent;color:var(--muted);transition:.2s}
+.toggle-btn.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.toggle-btn.active.pago{background:var(--green);color:#fff}
+.toggle-btn.active.devendo{background:#ef4444;color:#fff}
+.btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;box-shadow:0 8px 20px rgba(22,163,74,.3);display:flex;justify-content:center;gap:8px}
+.btn:active{transform:scale(0.98)}.btn:disabled{opacity:.6}
+.success{display:none;background:#f0fdf4;border:2px solid #bbf7d0;color:#166534;padding:14px;border-radius:14px;font-size:14px;font-weight:600;text-align:center;margin-bottom:16px}
+.total-box{background:#f0fdf4;border:2px dashed var(--green);border-radius:14px;padding:12px;text-align:center;margin-bottom:18px}
+.total-box span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px}
+.total-box strong{font-size:24px;color:var(--green);display:block;margin-top:4px;font-family:'Outfit',sans-serif}
+.footer{text-align:center;margin-top:20px;font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Cantina da Igreja</h1>
+    <h1 style="color:var(--yellow)">Ministério Doulos</h1>
+    <h2>🥟 Venda de Pastel - R$ 5,00</h2>
+  </div>
+  <div class="card">
+    <div id="success" class="success">✅ Venda lançada na planilha!</div>
+    <div class="field"><div class="label">👤 Nome da pessoa</div><input id="nome" class="input" placeholder="Ex: João Silva"></div>
+    <div class="row">
+      <div class="field"><div class="label">📱 Número</div><input id="numero" class="input" placeholder="(21) 9..."></div>
+      <div class="field"><div class="label">🔢 Qtd</div><input id="qtd" class="input" type="number" min="1" value="1" oninput="calcularTotal()"></div>
+    </div>
+    <div class="total-box">
+      <span>VALOR TOTAL</span>
+      <strong id="valorExibido">R$ 5,00</strong>
+    </div>
+    <div class="field">
+      <div class="label">💰 Pagou?</div>
+      <div class="toggle-group">
+        <button id="btnSim" class="toggle-btn pago" onclick="setPago(true)">SIM, pagou</button>
+        <button id="btnNao" class="toggle-btn devendo active" onclick="setPago(false)">NÃO, fiado</button>
+      </div>
+    </div>
+    <div class="field"><div class="label">🕒 Data/Hora</div><input id="datahora" class="input" readonly></div>
+    <button id="btnSalvar" class="btn" onclick="salvar()"><span>Salvar venda</span><span>→</span></button>
+    <div class="footer">FEITO COM AMOR PARA A CANTINA DOULOS • v1.0</div>
+  </div>
+</div>
+<script>
+const PRECO = 5;
+let pagou = false;
+function setPago(v){pagou=v;document.getElementById('btnSim').classList.toggle('active',v===true);document.getElementById('btnNao').classList.toggle('active',v===false);}
+function updateHora(){document.getElementById('datahora').value=new Date().toLocaleString('pt-BR');}
+function calcularTotal(){
+  const qtd = parseInt(document.getElementById('qtd').value) || 0;
+  const total = qtd * PRECO;
+  document.getElementById('valorExibido').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+  return total;
+}
+updateHora(); 
+setInterval(updateHora,1000);
+calcularTotal();
+
+async function salvar(){
+  const nome=document.getElementById('nome').value.trim();
+  const numero=document.getElementById('numero').value.trim();
+  const qtd=document.getElementById('qtd').value;
+  const datahora=document.getElementById('datahora').value;
+  const valorTotal = parseInt(qtd) * PRECO;
+  if(!nome){alert('Coloca o nome!');return;}
+  if(!qtd||qtd<1){alert('Quantidade inválida');return;}
+  const btn=document.getElementById('btnSalvar');
+  btn.disabled=true; btn.innerHTML='Salvando... ⏳';
+  try{
+    const res = await fetch('/api/vendas',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nome, numero, quantidade:qtd, datahora, pagou: pagou ? 'SIM' : 'NÃO', valorTotal})
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||'Erro');
+    document.getElementById('success').style.display='block';
+    document.getElementById('nome').value='';document.getElementById('numero').value='';document.getElementById('qtd').value='1';setPago(false);calcularTotal();
+    setTimeout(()=>{document.getElementById('success').style.display='none'},4000);
+  }catch(err){alert('Erro ao salvar: '+err.message);}
+  finally{btn.disabled=false; btn.innerHTML='<span>Salvar venda</span><span>→</span>';}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "cantina-doulos",
+  "version": "1.0.0",
+  "description": "Cantina Doulos - Venda de Pastel R$ 5,00 - B=NOME C=NUMERO D=QTD E=DATA F=PAGOU G=VALOR",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
